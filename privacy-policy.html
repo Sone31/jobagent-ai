@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — JobAgent AI</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f9fafb;
+      color: #1f2937;
+      line-height: 1.7;
+    }
+    header {
+      background: linear-gradient(135deg, #5b21b6, #7c3aed);
+      color: white;
+      padding: 40px 24px;
+      text-align: center;
+    }
+    header h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+    header p { font-size: 14px; opacity: 0.85; }
+    .container {
+      max-width: 780px;
+      margin: 40px auto;
+      padding: 0 24px 60px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 32px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #5b21b6;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    p { margin-bottom: 12px; font-size: 14.5px; color: #374151; }
+    ul { padding-left: 20px; margin-bottom: 12px; }
+    ul li { font-size: 14.5px; color: #374151; margin-bottom: 6px; }
+    .highlight {
+      background: #ede9fe;
+      border-left: 4px solid #7c3aed;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 14px;
+      color: #5b21b6;
+      font-weight: 500;
+    }
+    .green-box {
+      background: #dcfce7;
+      border-left: 4px solid #16a34a;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 14px;
+      color: #15803d;
+      font-weight: 500;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 13.5px;
+    }
+    th {
+      background: #f3f4f6;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+    }
+    td {
+      padding: 10px 14px;
+      border: 1px solid #e5e7eb;
+      color: #4b5563;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f9fafb; }
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-no { background: #dcfce7; color: #15803d; }
+    .badge-local { background: #ede9fe; color: #5b21b6; }
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 40px;
+    }
+    a { color: #7c3aed; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🤖 JobAgent AI — Privacy Policy</h1>
+  <p>Last updated: June 2026 &nbsp;|&nbsp; Effective immediately</p>
+</header>
+
+<div class="container">
+
+  <div class="green-box">
+    🔒 <strong>Summary:</strong> JobAgent AI does NOT collect, transmit, sell, or share your personal data. All information you enter stays on your device. The only external calls made are to Google's Gemini API using your own API key.
+  </div>
+
+  <!-- 1. Overview -->
+  <div class="card">
+    <h2>📋 1. Overview</h2>
+    <p>JobAgent AI ("the Extension") is a Chrome browser extension that helps users automatically fill job application forms on websites such as LinkedIn, Indeed, Seek, Glassdoor, and others, using Google Gemini AI.</p>
+    <p>This Privacy Policy explains what data the Extension handles, how it is stored, and how it is used. We are committed to protecting your privacy and being fully transparent about our data practices.</p>
+  </div>
+
+  <!-- 2. Data We Collect -->
+  <div class="card">
+    <h2>📦 2. Data the Extension Handles</h2>
+    <p>The Extension allows users to store the following information <strong>locally on their own device</strong> to enable auto-filling of job applications:</p>
+    <ul>
+      <li>Full name, email address, phone number</li>
+      <li>Location / address</li>
+      <li>LinkedIn URL and portfolio/website URL</li>
+      <li>Current job title, years of experience</li>
+      <li>Skills, work history summary</li>
+      <li>Education details (degree, institution, graduation year)</li>
+      <li>Certifications and languages</li>
+      <li>Salary expectation, notice period, visa/work status</li>
+      <li>Custom answers to common application questions</li>
+      <li>Google Gemini API key (stored locally, encrypted)</li>
+    </ul>
+    <div class="highlight">
+      ⚠️ All of the above data is stored exclusively in <strong>chrome.storage.local</strong> on the user's own device. It is never transmitted to any server operated by JobAgent AI.
+    </div>
+  </div>
+
+  <!-- 3. How Data is Used -->
+  <div class="card">
+    <h2>🔍 3. How Your Data is Used</h2>
+    <table>
+      <tr>
+        <th>Data</th>
+        <th>Purpose</th>
+        <th>Sent externally?</th>
+      </tr>
+      <tr>
+        <td>Profile info (name, email, etc.)</td>
+        <td>Auto-fill job application form fields</td>
+        <td><span class="badge badge-no">No — local only</span></td>
+      </tr>
+      <tr>
+        <td>Resume text (if uploaded)</td>
+        <td>Parsed by Gemini AI to populate profile fields</td>
+        <td><span class="badge badge-local">Sent to Gemini API once</span></td>
+      </tr>
+      <tr>
+        <td>Job listing page content</td>
+        <td>Sent to Gemini API to match fields and generate cover letters</td>
+        <td><span class="badge badge-local">Sent to Gemini API</span></td>
+      </tr>
+      <tr>
+        <td>Gemini API key</td>
+        <td>Authenticate requests to Google Gemini API</td>
+        <td><span class="badge badge-local">Sent to Google only</span></td>
+      </tr>
+      <tr>
+        <td>Extension settings</td>
+        <td>Remember user preferences</td>
+        <td><span class="badge badge-no">No — local only</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 4. Google Gemini API -->
+  <div class="card">
+    <h2>🤖 4. Google Gemini API</h2>
+    <p>The Extension uses the <strong>Google Gemini API</strong> for AI-powered features including form field matching, resume parsing, and cover letter generation.</p>
+    <ul>
+      <li>Users provide their <strong>own personal Gemini API key</strong> — the Extension does not use a shared or developer key.</li>
+      <li>Data sent to the Gemini API is governed by <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a> and <a href="https://ai.google.dev/gemini-api/terms" target="_blank">Gemini API Terms of Service</a>.</li>
+      <li>JobAgent AI has no access to, and does not store, any data that passes through the Gemini API.</li>
+    </ul>
+    <div class="highlight">
+      The Extension only communicates with <strong>generativelanguage.googleapis.com</strong> (Google's Gemini API endpoint). No other external servers are contacted.
+    </div>
+  </div>
+
+  <!-- 5. Data Storage -->
+  <div class="card">
+    <h2>💾 5. Data Storage & Security</h2>
+    <ul>
+      <li>All user profile data is stored using <strong>chrome.storage.local</strong> — a secure, sandboxed storage API provided by Chrome that only the Extension can access.</li>
+      <li>Data is stored only on the user's local device and is <strong>never uploaded</strong> to any external server, database, or cloud service operated by JobAgent AI.</li>
+      <li>The Gemini API key is stored locally and is only transmitted directly to Google's API endpoint over HTTPS.</li>
+      <li>Users can delete all stored data at any time from the Extension's Settings tab → "Clear All Data".</li>
+    </ul>
+  </div>
+
+  <!-- 6. Permissions -->
+  <div class="card">
+    <h2>🔐 6. Chrome Permissions Used</h2>
+    <table>
+      <tr><th>Permission</th><th>Why it's needed</th></tr>
+      <tr><td><code>activeTab</code></td><td>To read and interact with the current job listing page</td></tr>
+      <tr><td><code>scripting</code></td><td>To inject the form-detection and auto-fill script into job pages</td></tr>
+      <tr><td><code>sidePanel</code></td><td>To display the AI chat interface alongside job listings</td></tr>
+      <tr><td><code>storage</code></td><td>To save user profile and settings locally on the device</td></tr>
+      <tr><td><code>tabs</code></td><td>To detect page navigation and coordinate between sidebar and page</td></tr>
+      <tr><td><code>host_permissions (&lt;all_urls&gt;)</code></td><td>To work on any job site (LinkedIn, Indeed, Seek, Glassdoor, Workday, etc.)</td></tr>
+    </table>
+  </div>
+
+  <!-- 7. No Data Sharing -->
+  <div class="card">
+    <h2>🚫 7. Data We Do NOT Collect or Share</h2>
+    <p>JobAgent AI does <strong>not</strong>:</p>
+    <ul>
+      <li>Collect, store, or transmit your personal data to any server we operate</li>
+      <li>Sell, rent, or share your data with any third parties</li>
+      <li>Use your data for advertising or marketing purposes</li>
+      <li>Track your browsing history or job search activity</li>
+      <li>Use analytics or telemetry tools</li>
+      <li>Set any cookies on any website</li>
+    </ul>
+  </div>
+
+  <!-- 8. User Rights -->
+  <div class="card">
+    <h2>👤 8. Your Rights & Control</h2>
+    <p>You have full control over your data at all times:</p>
+    <ul>
+      <li><strong>View your data:</strong> All stored data is visible in the Extension's Profile and Settings tabs</li>
+      <li><strong>Edit your data:</strong> Update any profile field at any time</li>
+      <li><strong>Export your data:</strong> Use "Export Profile (JSON)" in Settings to download your data</li>
+      <li><strong>Delete your data:</strong> Use "Clear All Data" in Settings to permanently delete everything</li>
+      <li><strong>Uninstall:</strong> Removing the Extension from Chrome automatically deletes all locally stored data</li>
+    </ul>
+  </div>
+
+  <!-- 9. Children -->
+  <div class="card">
+    <h2>👶 9. Children's Privacy</h2>
+    <p>JobAgent AI is designed for adults seeking employment. The Extension is not directed at children under the age of 13, and we do not knowingly collect information from children.</p>
+  </div>
+
+  <!-- 10. Changes -->
+  <div class="card">
+    <h2>📝 10. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. Any changes will be reflected by updating the "Last updated" date at the top of this page. Continued use of the Extension after changes constitutes acceptance of the updated policy.</p>
+  </div>
+
+  <!-- 11. Contact -->
+  <div class="card">
+    <h2>📬 11. Contact</h2>
+    <p>If you have any questions or concerns about this Privacy Policy or the Extension's data practices, please contact us through the Chrome Web Store listing page.</p>
+  </div>
+
+  <footer>
+    <p>© 2026 JobAgent AI. All rights reserved.</p>
+    <p style="margin-top:6px">This extension is an independent tool and is not affiliated with LinkedIn, Indeed, Seek, Glassdoor, Google, or Anthropic.</p>
+  </footer>
+
+</div>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a09d98bd3bef5a61',t:'MTc4MTE0OTI1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

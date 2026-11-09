@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "JobAgent AI — Auto Apply",
+  "version": "3.1.0",
+  "description": "Free AI agent that auto-fills job applications on LinkedIn, Indeed, Seek, and any job site using Google Gemini, Groq or OpenRouter.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "sidePanel",
+    "tabs"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "JobAgent AI",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "pages/sidepanel.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["lib/ats-handlers.js", "lib/content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.linkedin.com/jobs/*",
+        "*://*.indeed.com/viewjob*",
+        "*://*.au.indeed.com/viewjob*",
+        "*://*.seek.com.au/job/*",
+        "*://*.seek.com.nz/job/*",
+        "*://*.glassdoor.com/job-listing/*",
+        "*://*.glassdoor.com/Job/*",
+        "*://*.lever.co/*",
+        "*://*.greenhouse.io/*",
+        "*://*.myworkdayjobs.com/*",
+        "*://*.myworkday.com/*",
+        "*://*.ashbyhq.com/*",
+        "*://*.smartrecruiters.com/*"
+      ],
+      "js": ["lib/match-overlay.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

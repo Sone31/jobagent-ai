@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>JobAgent AI</title>
+<style>
+/* ── Reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p:#7c3aed;--pd:#5b21b6;--pl:#ede9fe;--plb:#c4b5fd;
+  --g:#16a34a;--gl:#dcfce7;
+  --r:#dc2626;--rl:#fee2e2;
+  --y:#d97706;--yl:#fef3c7;
+  --b:#2563eb;--bl:#dbeafe;
+  --g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g300:#d1d5db;
+  --g400:#9ca3af;--g500:#6b7280;--g600:#4b5563;--g700:#374151;
+  --g800:#1f2937;--g900:#111827;--w:#fff;
+  --r8:8px;--sh:0 1px 3px rgba(0,0,0,.08);
+}
+html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:13px;background:var(--g50);color:var(--g800);overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* ── Header ── */
+#hdr{background:linear-gradient(135deg,var(--pd),var(--p));color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.hlogo{width:30px;height:30px;background:rgba(255,255,255,.2);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.htitle{font-weight:700;font-size:14px}
+.hsub{font-size:10px;opacity:.8;margin-top:1px}
+.hright{margin-left:auto;display:flex;align-items:center;gap:7px}
+.hdot{width:8px;height:8px;border-radius:50%;background:#86efac;flex-shrink:0}
+#hplatform{background:rgba(255,255,255,.2);font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;display:none}
+
+/* ── Tabs ── */
+#tabs{display:flex;background:var(--w);border-bottom:1px solid var(--g200);flex-shrink:0}
+.tb{flex:1;padding:8px 2px;border:none;background:none;cursor:pointer;font-size:10px;font-weight:500;color:var(--g500);display:flex;flex-direction:column;align-items:center;gap:2px;border-bottom:2px solid transparent;transition:all .15s}
+.tb:hover{color:var(--p);background:var(--pl)}
+.tb.on{color:var(--p);border-bottom-color:var(--p);background:var(--pl)}
+.ti{font-size:14px}
+
+/* ── Pane shells ── */
+.pane{display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0}
+.pane.on{display:flex}
+.scroll{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:9px;min-height:0}
+.scroll::-webkit-scrollbar{width:3px}
+.scroll::-webkit-scrollbar-thumb{background:var(--g300);border-radius:3px}
+
+/* ── Cards ── */
+.card{background:var(--w);border:1px solid var(--g200);border-radius:var(--r8);overflow:hidden;box-shadow:var(--sh);flex-shrink:0}
+.ch{padding:9px 12px;background:var(--g50);border-bottom:1px solid var(--g200);font-weight:600;font-size:11.5px;color:var(--g700);display:flex;align-items:center;gap:6px}
+.cb{padding:10px 12px}
+
+/* ── Buttons ── */
+.btn{width:100%;padding:10px 14px;border-radius:var(--r8);border:none;cursor:pointer;font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;font-family:inherit}
+.btn-p{background:var(--p);color:#fff}.btn-p:hover{background:var(--pd)}
+.btn-s{background:var(--g100);color:var(--g700);border:1px solid var(--g300)}.btn-s:hover{background:var(--g200)}
+.btn-g{background:var(--g);color:#fff}.btn-g:hover{background:#15803d}
+.btn-r{background:var(--r);color:#fff}.btn-r:hover{background:#b91c1c}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+
+/* ── Apply tab ── */
+#pg-box{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--pl);border:1px solid var(--plb);border-radius:var(--r8);flex-shrink:0;font-size:11px;color:var(--pd)}
+#pg-title{font-weight:600;font-size:11.5px}
+#pg-url{font-size:10px;opacity:.7;margin-top:1px}
+#pg-platform{background:var(--p);color:#fff;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:auto;flex-shrink:0;display:none}
+
+/* Progress */
+#prog-wrap{background:var(--g200);border-radius:99px;height:5px;overflow:hidden;margin-top:6px}
+#prog-bar{height:100%;background:linear-gradient(90deg,var(--p),#a855f7);border-radius:99px;transition:width .4s ease;width:0%}
+
+/* Status alert */
+.alert{padding:9px 11px;border-radius:7px;font-size:11.5px;line-height:1.5;flex-shrink:0}
+.a-info{background:var(--pl);color:var(--pd);border:1px solid var(--plb)}
+.a-ok{background:var(--gl);color:var(--g);border:1px solid #86efac}
+.a-warn{background:var(--yl);color:var(--y);border:1px solid #fde68a}
+.a-err{background:var(--rl);color:var(--r);border:1px solid #fca5a5}
+
+/* Fields list */
+#flist{max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.fi{display:flex;align-items:center;gap:7px;padding:5px 7px;background:var(--g50);border-radius:5px;font-size:11px}
+.fb{padding:2px 7px;border-radius:10px;font-size:9px;font-weight:600;flex-shrink:0;white-space:nowrap}
+.fb-ok{background:var(--gl);color:var(--g)}
+.fb-sk{background:var(--g100);color:var(--g500)}
+.fb-ry{background:var(--yl);color:var(--y)}
+
+/* Cover letter */
+#cl-out{width:100%;border:1px solid var(--g200);border-radius:6px;padding:8px;font-size:11.5px;font-family:inherit;resize:vertical;min-height:130px;line-height:1.6}
+
+/* ── Profile tab ── */
+.uz{border:2px dashed var(--g300);border-radius:var(--r8);padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--w)}
+.uz:hover,.uz.drag{border-color:var(--p);background:var(--pl)}
+.uz-icon{font-size:26px;margin-bottom:6px}
+.uz-title{font-weight:600;color:var(--g700);font-size:12px;margin-bottom:3px}
+.uz-sub{font-size:10px;color:var(--g400)}
+#rf{display:none}
+.pf{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.pf label{font-size:11px;font-weight:600;color:var(--g600)}
+.pf input,.pf textarea,.pf select{border:1px solid var(--g300);border-radius:6px;padding:6px 9px;font-size:12px;font-family:inherit;outline:none;background:var(--w);width:100%}
+.pf input:focus,.pf textarea:focus,.pf select:focus{border-color:var(--p);box-shadow:0 0 0 2px rgba(124,58,237,.1)}
+.pf textarea{resize:vertical;min-height:55px}
+.t2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* ── Settings tab ── */
+.ps{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r8);padding:10px 12px;margin-bottom:10px;flex-shrink:0}
+.ph{display:flex;align-items:center;gap:7px;margin-bottom:8px;font-weight:600;font-size:11.5px;color:var(--g700)}
+.pstat{margin-left:auto;font-size:10px;font-weight:600}
+.pstat-ok{color:var(--g)}.pstat-err{color:var(--r)}.pstat-no{color:var(--g400)}
+.si{width:100%;border:1px solid var(--g300);border-radius:6px;padding:7px 9px;font-size:12px;font-family:inherit;outline:none}
+.si:focus{border-color:var(--p)}
+.sl{font-size:11px;font-weight:600;color:var(--g600);margin-bottom:4px;display:block}
+.kw{position:relative}
+.kw .si{padding-right:34px}
+.keye{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--g400);font-size:13px}
+.bp{display:inline-block;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:700;margin-right:5px;vertical-align:middle}
+.bp-a{background:#3b82f6;color:#fff}.bp-b{background:#f97316;color:#fff}.bp-c{background:var(--g500);color:#fff}.bp-f{background:var(--g);color:#fff}
+.sm{font-size:11px;color:var(--g500)}
+.tr{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g100)}
+.tr:last-child{border-bottom:none}
+.tlabel{font-size:12px;color:var(--g700)}
+.tsub{font-size:10px;color:var(--g400)}
+.tsw{width:34px;height:18px;background:var(--g300);border-radius:9px;cursor:pointer;position:relative;border:none;transition:background .2s;flex-shrink:0}
+.tsw::after{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:left .2s}
+.tsw.on{background:var(--p)}.tsw.on::after{left:18px}
+
+/* ── Tracker tab ── */
+.tst{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex-shrink:0}
+.tsb{background:var(--w);border:1px solid var(--g200);border-radius:var(--r8);padding:8px 6px;text-align:center;box-shadow:var(--sh)}
+.tsn{font-size:18px;font-weight:800;line-height:1}
+.tsl{font-size:9px;color:var(--g500);margin-top:3px;font-weight:500}
+.tsb-a .tsn{color:var(--p)}.tsb-v .tsn{color:var(--b)}.tsb-i .tsn{color:var(--y)}.tsb-o .tsn{color:var(--g)}
+#tsearch{width:100%;border:1px solid var(--g300);border-radius:6px;padding:7px 10px;font-size:12px;font-family:inherit;outline:none;flex-shrink:0}
+#tsearch:focus{border-color:var(--p)}
+.fchips{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.fc{padding:4px 10px;border-radius:20px;border:1px solid var(--g200);background:var(--w);font-size:10.5px;cursor:pointer;font-weight:500;color:var(--g600);white-space:nowrap;transition:all .15s}
+.fc.on{background:var(--p);color:#fff;border-color:var(--p)}
+.fc:hover:not(.on){background:var(--g100)}
+.jc{background:var(--w);border:1px solid var(--g200);border-radius:var(--r8);overflow:hidden;box-shadow:var(--sh);flex-shrink:0}
+.jch{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;cursor:pointer}
+.jcl{width:34px;height:34px;border-radius:7px;background:var(--g100);border:1px solid var(--g200);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--g500);flex-shrink:0;text-transform:uppercase}
+.jci{flex:1;min-width:0}
+.jct{font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jcc{font-size:10.5px;color:var(--g500);margin-top:1px}
+.jcm{font-size:10px;color:var(--g400);margin-top:2px;display:flex;gap:7px;flex-wrap:wrap}
+.jcr{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.sb{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.s-ap{background:var(--pl);color:var(--pd)}.s-vi{background:var(--bl);color:var(--b)}.s-in{background:var(--yl);color:var(--y)}.s-of{background:var(--gl);color:var(--g)}.s-re{background:var(--rl);color:var(--r)}.s-wi{background:var(--g100);color:var(--g500)}
+.mb{font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px}
+.jcb{display:none;padding:0 11px 10px;border-top:1px solid var(--g100)}
+.jcb.on{display:block}
+.jba{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.jbb{padding:4px 10px;border-radius:6px;border:1px solid var(--g300);background:var(--w);font-size:11px;cursor:pointer;font-weight:500;color:var(--g600);transition:all .15s;font-family:inherit}
+.jbb:hover{background:var(--g100)}
+.jbb.r{border-color:#fca5a5;color:var(--r)}.jbb.r:hover{background:var(--rl)}
+.jbb.p{border-color:var(--plb);color:var(--p);background:var(--pl)}.jbb.p:hover{background:var(--p);color:#fff}
+.sselect{border:1px solid var(--g300);border-radius:6px;padding:4px 8px;font-size:11px;font-family:inherit;outline:none;color:var(--g700);background:var(--w)}
+.nnotes{width:100%;border:1px solid var(--g300);border-radius:6px;padding:5px 8px;font-size:11px;font-family:inherit;outline:none;resize:vertical;min-height:44px;margin-top:4px;color:var(--g700)}
+.nnotes:focus{border-color:var(--p)}
+.te{text-align:center;padding:28px 14px;color:var(--g400)}
+.te-i{font-size:34px;margin-bottom:9px}
+.te-t{font-size:13px;font-weight:600;color:var(--g600);margin-bottom:5px}
+.te-s{font-size:11.5px;line-height:1.6}
+
+/* Add job modal */
+#ajm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;align-items:flex-end}
+#ajm.on{display:flex}
+.ms{background:var(--w);border-radius:16px 16px 0 0;padding:16px;width:100%;max-height:85vh;overflow-y:auto}
+.mst{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.msc{background:none;border:none;font-size:18px;cursor:pointer;color:var(--g400)}
+.mf{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.mf label{font-size:11px;font-weight:600;color:var(--g600)}
+.mf input,.mf select,.mf textarea{border:1px solid var(--g300);border-radius:6px;padding:7px 9px;font-size:12px;font-family:inherit;outline:none;width:100%}
+.mf input:focus,.mf select:focus{border-color:var(--p)}
+
+/* ── Queue tab ── */
+.bsr{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--g50);border:1px solid var(--g200);border-radius:var(--r8);flex-shrink:0}
+.bdot{width:8px;height:8px;border-radius:50%;background:var(--g300);flex-shrink:0;transition:background .3s}
+.bdot.on{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2)}
+.bst{font-size:11.5px;font-weight:600;flex:1}
+.bss{font-size:10px;color:var(--g400)}
+.lbar{display:none;align-items:center;gap:8px;padding:8px 11px;background:var(--bl);border:1px solid #93c5fd;border-radius:var(--r8);font-size:11.5px;color:var(--b);flex-shrink:0}
+.lsp{width:13px;height:13px;border:2px solid #93c5fd;border-top-color:var(--b);border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+.qi{display:flex;align-items:center;gap:9px;padding:9px 11px;border-bottom:1px solid var(--g100)}
+.qi:last-child{border-bottom:none}
+.qil{width:30px;height:30px;border-radius:6px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--g500);flex-shrink:0;text-transform:uppercase}
+.qii{flex:1;min-width:0}
+.qit{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qic{font-size:10.5px;color:var(--g500)}
+.qist{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.qs-queued{background:var(--pl);color:var(--pd)}
+.qs-processing{background:var(--bl);color:var(--b)}
+.qs-submitted{background:var(--gl);color:var(--g)}
+.qs-error{background:var(--rl);color:var(--r)}
+.qs-awaiting_approval{background:var(--yl);color:var(--y)}
+.qs-rejected,.qs-cancelled{background:var(--g100);color:var(--g500)}
+.qcx{background:none;border:none;color:var(--g400);cursor:pointer;font-size:13px;flex-shrink:0}
+.qcx:hover{color:var(--r)}
+
+/* Diff modal */
+#dm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:flex-end}
+#dm.on{display:flex}
+.ds{background:var(--w);border-radius:16px 16px 0 0;width:100%;max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
+.dsh{padding:12px 16px;border-bottom:1px solid var(--g200);flex-shrink:0}
+.dsht{font-size:13.5px;font-weight:700}
+.dshs{font-size:10.5px;color:var(--g500);margin-top:2px}
+.dsb{overflow-y:auto;flex:1;padding:12px 16px}
+.dfr{display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid var(--g100)}
+.dfr:last-child{border-bottom:none}
+.dfl{font-size:10.5px;color:var(--g500);width:85px;flex-shrink:0;padding-top:3px;font-weight:500}
+.dfv{flex:1;font-size:11.5px;padding:4px 8px;border-radius:5px;line-height:1.4}
+.dv-p{background:var(--gl);color:#15803d}.dv-ai{background:var(--yl);color:#713f12}
+.dsf{padding:11px 16px;border-top:1px solid var(--g200);display:flex;gap:8px;flex-shrink:0}
+.dab{flex:1;padding:11px;border:none;border-radius:var(--r8);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.da-ok{background:var(--g);color:#fff}.da-ok:hover{background:#15803d}
+.da-no{background:var(--g100);color:var(--g700);border:1px solid var(--g300)}.da-no:hover{background:var(--rl);color:var(--r);border-color:#fca5a5}
+.dleg{display:flex;gap:12px;margin-bottom:10px;flex-shrink:0}
+.dli{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--g600)}
+.dld{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:12px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--g900);color:#fff;padding:7px 14px;border-radius:20px;font-size:11.5px;font-weight:500;z-index:99999;transition:transform .3s;white-space:nowrap;max-width:270px;text-align:center}
+#toast.on{transform:translateX(-50%) translateY(0)}
+#toast.t-ok{background:var(--g)}#toast.t-er{background:var(--r)}#toast.t-wa{background:var(--y)}
+
+/* Misc */
+.divider{border:none;border-top:1px solid var(--g200);margin:6px 0;flex-shrink:0}
+.mt2{margin-top:6px}.mt3{margin-top:10px}
+a{color:var(--p)}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;display:inline-block}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- Header -->
+<div id="hdr">
+  <div class="hlogo">🤖</div>
+  <div>
+    <div class="htitle">JobAgent AI</div>
+    <div class="hsub" id="hsub">Auto-fill job applications</div>
+  </div>
+  <div class="hright">
+    <span id="hplatform"></span>
+    <div class="hdot"></div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div id="tabs">
+  <button class="tb on" data-tab="apply"><span class="ti">⚡</span>Apply</button>
+  <button class="tb" data-tab="profile"><span class="ti">👤</span>Profile</button>
+  <button class="tb" data-tab="tracker"><span class="ti">📊</span>Tracker</button>
+  <button class="tb" data-tab="queue"><span class="ti">📬</span>Queue</button>
+  <button class="tb" data-tab="settings"><span class="ti">⚙️</span>Settings</button>
+</div>
+
+<!-- ═══ APPLY TAB ═══ -->
+<div class="pane on" id="apply-pane">
+  <div class="scroll">
+
+    <!-- Page detection -->
+    <div id="pg-box">
+      <div style="font-size:20px">📄</div>
+      <div style="flex:1;min-width:0">
+        <div id="pg-title">No page detected</div>
+        <div id="pg-url">Navigate to a job listing</div>
+      </div>
+      <span id="pg-platform"></span>
+    </div>
+
+    <!-- PRIMARY action -->
+    <button class="btn btn-p" id="btn-main" style="font-size:13.5px;padding:13px">
+      ⚡ Scan &amp; Auto-Fill Form
+    </button>
+
+    <!-- Status -->
+    <div id="apply-status" class="alert a-info" style="display:none"></div>
+
+    <!-- Progress -->
+    <div class="card" id="prog-card" style="display:none">
+      <div class="cb">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span id="prog-label" style="font-size:11px;color:var(--g500)">Working...</span>
+          <span id="prog-pct" style="font-size:11px;font-weight:700;color:var(--p)">0%</span>
+        </div>
+        <div id="prog-wrap"><div id="prog-bar"></div></div>
+      </div>
+    </div>
+
+    <!-- Secondary actions -->
+    <div class="g2">
+      <button class="btn btn-s" id="btn-apply">👆 Click Apply</button>
+      <button class="btn btn-s" id="btn-next">⏭️ Next Step</button>
+    </div>
+    <div class="g2">
+      <button class="btn btn-s" id="btn-cl">✍️ Cover Letter</button>
+      <button class="btn btn-s" id="btn-score">🎯 Match Score</button>
+    </div>
+    <button class="btn btn-s" id="btn-queue-apply" style="border-color:var(--plb);color:var(--p)">
+      📬 Send to Auto-Apply Queue
+    </button>
+
+    <!-- Fields detected -->
+    <div class="card" id="fcard" style="display:none">
+      <div class="ch">📝 Detected Fields
+        <span id="fcount" style="margin-left:auto;font-size:10px;color:var(--g400);font-weight:400"></span>
+      </div>
+      <div class="cb"><div id="flist"></div></div>
+    </div>
+
+    <!-- Cover letter -->
+    <div class="card" id="cl-card" style="display:none">
+      <div class="ch">✍️ Cover Letter
+        <button id="btn-copy-cl" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:11px;color:var(--g500)">📋 Copy</button>
+      </div>
+      <div class="cb"><textarea id="cl-out" readonly></textarea></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ PROFILE TAB ═══ -->
+<div class="pane" id="profile-pane">
+  <div class="scroll">
+
+    <div class="card">
+      <div class="ch">📄 Resume Upload</div>
+      <div class="cb">
+        <div class="uz" id="uz">
+          <div class="uz-icon">📁</div>
+          <div class="uz-title">Drop your resume here</div>
+          <div class="uz-sub">PDF or TXT · Click to browse</div>
+        </div>
+        <input type="file" id="rf" accept=".pdf,.txt,.doc,.docx"/>
+        <div id="upload-status" class="mt2" style="display:none"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">👤 Personal Details</div>
+      <div class="cb">
+        <div class="t2">
+          <div class="pf"><label>Full Name *</label><input id="p-name" placeholder="John Smith"/></div>
+          <div class="pf"><label>Email *</label><input type="email" id="p-email" placeholder="john@email.com"/></div>
+        </div>
+        <div class="t2">
+          <div class="pf"><label>Phone</label><input type="tel" id="p-phone" placeholder="+61 400 000 000"/></div>
+          <div class="pf"><label>Location</label><input id="p-location" placeholder="Melbourne, VIC"/></div>
+        </div>
+        <div class="t2">
+          <div class="pf"><label>LinkedIn URL</label><input type="url" id="p-linkedin" placeholder="linkedin.com/in/..."/></div>
+          <div class="pf"><label>Portfolio</label><input type="url" id="p-portfolio" placeholder="yoursite.com"/></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">💼 Work Details</div>
+      <div class="cb">
+        <div class="t2">
+          <div class="pf"><label>Current / Target Title</label><input id="p-title" placeholder="Software Engineer"/></div>
+          <div class="pf"><label>Years of Experience</label><input id="p-years" placeholder="5"/></div>
+        </div>
+        <div class="t2">
+          <div class="pf"><label>Salary Expectation</label><input id="p-salary" placeholder="$100,000 AUD"/></div>
+          <div class="pf"><label>Notice Period</label><input id="p-notice" placeholder="2 weeks"/></div>
+        </div>
+        <div class="t2">
+          <div class="pf"><label>Visa / Work Rights</label><input id="p-visa" placeholder="AU Citizen / PR / 482"/></div>
+          <div class="pf"><label>Work Preference</label>
+            <select id="p-worktype">
+              <option value="">Select...</option>
+              <option>Full-time</option><option>Part-time</option>
+              <option>Contract</option><option>Casual</option><option>Remote</option>
+            </select>
+          </div>
+        </div>
+        <div class="pf"><label>Key Skills (comma separated)</label>
+          <input id="p-skills" placeholder="Python, React, Project Management..."/></div>
+        <div class="pf"><label>Professional Summary</label>
+          <textarea id="p-summary" placeholder="Brief overview of your experience and goals..."></textarea></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">🎓 Education</div>
+      <div class="cb">
+        <div class="pf"><label>Highest Degree</label><input id="p-degree" placeholder="Bachelor of Computer Science"/></div>
+        <div class="t2">
+          <div class="pf"><label>Institution</label><input id="p-institution" placeholder="University of Melbourne"/></div>
+          <div class="pf"><label>Graduation Year</label><input id="p-gradyear" placeholder="2020"/></div>
+        </div>
+        <div class="pf"><label>Certifications</label><input id="p-certs" placeholder="AWS Certified, PMP..."/></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">📝 Common Answers</div>
+      <div class="cb">
+        <div class="pf"><label>Why do you want this job?</label>
+          <textarea id="p-why" placeholder="I'm passionate about..."></textarea></div>
+        <div class="pf"><label>Greatest Strength</label>
+          <textarea id="p-strength" rows="2" placeholder="My greatest strength is..."></textarea></div>
+        <div class="pf"><label>Authorised to work? (full answer)</label>
+          <input id="p-authorized" placeholder="Yes, I am authorised to work in Australia"/></div>
+      </div>
+    </div>
+
+    <button class="btn btn-p" id="btn-save-profile">💾 Save Profile</button>
+    <div style="height:10px;flex-shrink:0"></div>
+  </div>
+</div>
+
+<!-- ═══ TRACKER TAB ═══ -->
+<div class="pane" id="tracker-pane">
+  <div class="scroll">
+
+    <div class="tst">
+      <div class="tsb tsb-a"><div class="tsn" id="st-ap">0</div><div class="tsl">Applied</div></div>
+      <div class="tsb tsb-v"><div class="tsn" id="st-vi">0</div><div class="tsl">Viewed</div></div>
+      <div class="tsb tsb-i"><div class="tsn" id="st-in">0</div><div class="tsl">Interview</div></div>
+      <div class="tsb tsb-o"><div class="tsn" id="st-of">0</div><div class="tsl">Offer 🎉</div></div>
+    </div>
+
+    <div style="display:flex;gap:7px;flex-shrink:0">
+      <input id="tsearch" type="text" placeholder="🔍  Search..."/>
+      <button class="btn btn-p" id="btn-add-job" style="width:auto;padding:7px 12px;font-size:12px;white-space:nowrap">+ Add</button>
+      <button class="btn btn-s" id="btn-export-csv" style="width:auto;padding:7px 10px;font-size:11px">📥 CSV</button>
+    </div>
+
+    <div class="fchips" id="tfilters">
+      <button class="fc on" data-f="all">All</button>
+      <button class="fc" data-f="Applied">Applied</button>
+      <button class="fc" data-f="Viewed">Viewed</button>
+      <button class="fc" data-f="Interview">Interview</button>
+      <button class="fc" data-f="Offer">Offer</button>
+      <button class="fc" data-f="Rejected">Rejected</button>
+    </div>
+
+    <div id="tlist"></div>
+    <div style="height:10px;flex-shrink:0"></div>
+  </div>
+</div>
+
+<!-- Add Job Modal -->
+<div id="ajm">
+  <div class="ms">
+    <div class="mst">📝 Log Application<button class="msc" id="ajm-close">✕</button></div>
+    <div class="mf"><label>Job Title *</label><input id="aj-title" placeholder="Software Engineer"/></div>
+    <div class="mf"><label>Company *</label><input id="aj-company" placeholder="Google"/></div>
+    <div class="mf"><label>Job URL</label><input type="url" id="aj-url" placeholder="https://..."/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="mf"><label>Platform</label>
+        <select id="aj-platform"><option>LinkedIn</option><option>Seek</option><option>Indeed</option><option>Glassdoor</option><option>Company Site</option><option>Other</option></select></div>
+      <div class="mf"><label>Status</label>
+        <select id="aj-status"><option>Applied</option><option>Viewed</option><option>Interview</option><option>Offer</option><option>Rejected</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="mf"><label>Match %</label><input type="number" id="aj-score" min="0" max="100" placeholder="85"/></div>
+      <div class="mf"><label>Salary</label><input id="aj-salary" placeholder="$90k–$110k"/></div>
+    </div>
+    <div class="mf"><label>Notes</label><textarea id="aj-notes" rows="2" placeholder="Recruiter, next steps..."></textarea></div>
+    <button class="btn btn-p" id="btn-save-job" style="margin-top:4px">💾 Save</button>
+  </div>
+</div>
+
+<!-- ═══ QUEUE TAB ═══ -->
+<div class="pane" id="queue-pane">
+  <div class="scroll">
+
+    <div class="bsr">
+      <div class="bdot" id="bdot"></div>
+      <div style="flex:1">
+        <div class="bst" id="bst">Checking backend...</div>
+        <div class="bss" id="bss">Local Node.js server · localhost:51473</div>
+      </div>
+      <button id="btn-chk-backend" style="background:none;border:1px solid var(--g300);border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;color:var(--g600)">↻</button>
+    </div>
+
+    <div id="backend-setup" class="alert a-warn" style="font-size:11px;line-height:1.8;display:none">
+      <strong>Backend not running.</strong> To enable headless auto-apply:<br>
+      1. Open Terminal on your Mac<br>
+      2. <code style="background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px">cd jobagent-backend && npm install</code><br>
+      3. <code style="background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px">node server.js</code>
+    </div>
+
+    <div class="lbar" id="lbar">
+      <div class="lsp"></div>
+      <span id="lbar-txt">Processing...</span>
+    </div>
+
+    <div id="captcha-banner" class="alert a-warn" style="display:none">
+      🔒 <strong>CAPTCHA detected!</strong> Solve it in the browser window, then come back.
+    </div>
+
+    <button class="btn btn-p" id="btn-queue-now" disabled>
+      📬 Add Current Job to Queue
+    </button>
+
+    <div class="card">
+      <div class="ch">📬 Auto-Apply Queue
+        <span id="qcount" style="margin-left:auto;font-size:10px;color:var(--g400);font-weight:400">0 jobs</span>
+      </div>
+      <div id="qlist"><div class="te" style="padding:20px"><div class="te-s">No jobs queued yet</div></div></div>
+    </div>
+
+    <div class="g2">
+      <button class="btn btn-s" id="btn-q-refresh" style="font-size:12px">↻ Refresh</button>
+      <button class="btn btn-s" id="btn-q-clear" style="font-size:12px">🗑️ Clear Done</button>
+    </div>
+
+    <div style="height:10px;flex-shrink:0"></div>
+  </div>
+</div>
+
+<!-- Diff Approve Modal -->
+<div id="dm">
+  <div class="ds">
+    <div class="dsh">
+      <div class="dsht">⚠️ Review Before Submitting</div>
+      <div class="dshs" id="dm-sub">Check all fields then approve</div>
+    </div>
+    <div class="dsb">
+      <div class="dleg">
+        <div class="dli"><div class="dld" style="background:var(--gl)"></div>From profile</div>
+        <div class="dli"><div class="dld" style="background:var(--yl)"></div>AI generated</div>
+      </div>
+      <div id="dm-fields"></div>
+      <div id="dm-cl" style="display:none;margin-top:12px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--g400);margin-bottom:5px">Cover Letter</div>
+        <div id="dm-cl-text" style="background:var(--yl);border-radius:6px;padding:8px;font-size:11px;line-height:1.6;color:#713f12;max-height:110px;overflow-y:auto"></div>
+      </div>
+    </div>
+    <div class="dsf">
+      <button class="dab da-no" id="dm-reject">✕ Reject</button>
+      <button class="dab da-ok" id="dm-approve">✅ Approve & Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SETTINGS TAB ═══ -->
+<div class="pane" id="settings-pane">
+  <div class="scroll">
+
+    <!-- Gemini -->
+    <div class="ps">
+      <div class="ph"><span class="bp bp-a">PRIMARY</span>Google Gemini<span class="pstat pstat-no" id="st-gemini">Not set</span></div>
+      <div style="margin-bottom:10px">
+        <span class="sl">API Key</span>
+        <div class="kw">
+          <input type="password" class="si" id="s-gemini-key" placeholder="AIza..."/>
+          <button class="keye" id="eye-gemini">👁️</button>
+        </div>
+        <div class="sm mt2">Free 1,500 req/day · <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a></div>
+      </div>
+      <div>
+        <span class="sl">Model</span>
+        <select class="si" id="s-gemini-model">
+          <option value="gemini-3.6-flash">Gemini 3.6 Flash — Latest ⭐ (Free)</option>
+          <option value="gemini-3.5-flash">Gemini 3.5 Flash (Free)</option>
+          <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite — Fastest (Free)</option>
+          <option value="gemini-2.5-flash">Gemini 2.5 Flash — Stable (Free)</option>
+          <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro (Paid)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Groq -->
+    <div class="ps">
+      <div class="ph"><span class="bp bp-b">FALLBACK 1</span>Groq <span class="bp bp-f" style="font-size:9px">FREE 14,400/day</span><span class="pstat pstat-no" id="st-groq">Not set</span></div>
+      <div style="margin-bottom:10px">
+        <span class="sl">API Key</span>
+        <input type="password" class="si" id="s-groq-key" placeholder="gsk_..."/>
+        <div class="sm mt2"><a href="https://console.groq.com" target="_blank">console.groq.com</a></div>
+      </div>
+      <div>
+        <span class="sl">Model</span>
+        <select class="si" id="s-groq-model">
+          <option value="llama-4-maverick-17b-128e-instruct">Llama 4 Maverick — Best (Free)</option>
+          <option value="llama-4-scout-17b-16e-instruct">Llama 4 Scout — Fast (Free)</option>
+          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Free)</option>
+          <option value="qwen3-32b">Qwen3 32B (Free)</option>
+          <option value="kimi-k2-instruct">Kimi K2 (Free)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- OpenRouter -->
+    <div class="ps">
+      <div class="ph"><span class="bp bp-c">FALLBACK 2</span>OpenRouter<span class="pstat pstat-no" id="st-or">Not set</span></div>
+      <div style="margin-bottom:10px">
+        <span class="sl">API Key</span>
+        <input type="password" class="si" id="s-or-key" placeholder="sk-or-..."/>
+        <div class="sm mt2"><a href="https://openrouter.ai/keys" target="_blank">openrouter.ai</a></div>
+      </div>
+      <div>
+        <span class="sl">Model</span>
+        <select class="si" id="s-or-model">
+          <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (Free)</option>
+          <option value="google/gemma-3-27b-it:free">Gemma 3 27B (Free)</option>
+          <option value="qwen/qwen3-235b-a22b:free">Qwen3 235B (Free)</option>
+          <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (Paid)</option>
+          <option value="openai/gpt-4o">GPT-4o (Paid)</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn btn-p" id="btn-test-ai">🧪 Save & Test All Connections</button>
+    <div id="ai-test-result" style="display:none" class="alert mt2"></div>
+
+    <div class="card">
+      <div class="ch">⚙️ Fill Settings</div>
+      <div class="cb">
+        <div class="tr"><div><div class="tlabel">Confirm before submitting</div><div class="tsub">Review before Submit click</div></div><button class="tsw on" id="sw-confirm"></button></div>
+        <div class="tr"><div><div class="tlabel">Highlight filled fields</div><div class="tsub">Purple outline on fills</div></div><button class="tsw on" id="sw-highlight"></button></div>
+        <div class="tr"><div><div class="tlabel">Skip low-confidence fills</div><div class="tsub">Only fill when AI is sure</div></div><button class="tsw" id="sw-skip"></button></div>
+        <div class="tr"><div><div class="tlabel">Auto-scroll to fields</div><div class="tsub">Scroll to each field</div></div><button class="tsw on" id="sw-scroll"></button></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">ℹ️ About</div>
+      <div class="cb" style="display:flex;flex-direction:column;gap:7px">
+        <div class="sm" style="line-height:1.7"><strong>JobAgent AI</strong> v3.1.0 · Free · Local · No account needed<br>Works on LinkedIn, Seek, Indeed, Glassdoor, Workday, Greenhouse, Lever & any job site.</div>
+        <div class="alert a-info" style="font-size:10.5px">🔒 All data stored locally. API calls go to your chosen AI provider only.</div>
+        <button class="btn btn-s" id="btn-export-profile">📤 Export Profile</button>
+        <button class="btn btn-r" id="btn-clear-all">🗑️ Clear All Data</button>
+      </div>
+    </div>
+
+    <div style="height:10px;flex-shrink:0"></div>
+  </div>
+</div>
+
+</div><!-- /app -->
+<div id="toast"></div>
+
+<script src="../lib/ai-client.js"></script>
+<script src="../lib/resume-parser.js"></script>
+<script src="../lib/backend-client.js"></script>
+<script src="../pages/sidepanel.js"></script>
+</body>
+</html>
